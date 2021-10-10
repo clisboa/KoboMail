@@ -1,0 +1,22 @@
+# currently only gmail is supported
+
+# you need to activate IMAP for your gmail account
+imap_host = "imap.gmail.com"
+imap_port = "993"
+
+# gmail account
+imap_user = "user@gmail.com"
+
+# gmail app password. you will need to generate a password specifically for KoboMail
+# this can be done here: https://support.google.com/mail/answer/185833?hl=en-GB
+imap_pwd = "password"
+
+# with gmail you can send an email to user+kobo@gmail.com and the email will land on user@gmail.com account
+# you can customize the flag used to detect the emails you want to process specifically for the Kobo device
+email_flag = "kobo"
+
+# flag to process all emails sent fo user+kobo@gmail.com or only the unread emails
+email_unseen = "true"
+
+# If you want to uninstall KoboMail just place an empty file called UNINSTALL next to this configuration file 
+# and next time KoboMail runs it will delete itself
