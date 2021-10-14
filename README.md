@@ -18,8 +18,16 @@ Use this software AT YOUR OWN RISK.
 * with NickelDbus the user now gets a toast when no new emails were processed and a dialog showing the number of ebooks download and processed (only if NickelDbus is present, else the old method still aplies)
 
 ![User Dialog](https://clisboa.github.io/img/KoboMailDialog.jpg)
+
 **0.1.0**
 * Initial release
+
+
+## TODO
+* add kepubify (already verified the arm binary can perfectly do the conversion on device)
+* looking into using NickelDbus to replace udev rules (triggering the program execution)
+* adding fbink progress bar when we start execution? (probably to much hassle for little return in functionality)
+* add other emails accounts types
 
 ## Installing
 
