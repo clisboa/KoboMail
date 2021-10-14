@@ -13,17 +13,22 @@ This software is experimental, if you don't want to risk corrupting your files, 
 Use this software AT YOUR OWN RISK.
 
 ## Changelog
+**0.2.0**
+* Added optional dependency to NickelDbus so we can trigger library rescan without human intervention
+* with NickelDbus the user now gets a toast when no new emails were processed and a dialog showing the number of ebooks download and processed (only if NickelDbus is present, else the old method still aplies)
+
+![User Dialog](https://clisboa.github.io/img/KoboMailDialog.jpg)
 **0.1.0**
 * Initial release
 
 ## Installing
 
 Quick start for Kobo devices:
-
-1. download the latest [KoboRoot.tgz](https://github.com/clisboa/KoboMail/releases/download/v0.1/KoboRoot.tgz)
-1. connect your Kobo device to your computer with a USB cable
-3. place the KoboRoot.tgz file in the .kobo directory of your Kobo device
-4. disconnect the reader
+1. (OPTIONAL) download and install NickelDbus for increased functionality [KoboRoot.tgz](https://github.com/shermp/NickelDBus/releases/download/0.1.0/KoboRoot.tgz)
+2. download the latest [KoboRoot.tgz](https://github.com/clisboa/KoboMail/releases/download/v0.1/KoboRoot.tgz)
+3. connect your Kobo device to your computer with a USB cable
+4. place the KoboRoot.tgz file in the .kobo directory of your Kobo device
+5. disconnect the reader
 
 When you disconnect the Kobo device, it will perform the instalation of the KoboRoot.tgz files onto the device.
 Once the installation is finished you can verify that KoboRoot.tgz is now gone.
@@ -61,17 +66,22 @@ Once the configuration is correct everytime your device connects to a Wifi acces
 If any messages were processed after a few seconds Kobo will display the dialog to connect to a PC, you don't need to actually physically connect a USB cable you just need to click on the Connect button. This is part of a workarround to trigger Kobo to recognize the new ebooks it just received via email.
 After clicking on the connect button you will see the common full screen dialog as if Kobo was connected to a PC and shortly after it will show the import content progress bar.
 
+When KoboMail didn't find any emails to process this dialog will not be displayed.
+
+You are also able to trigger KoboMail execution by disabling and enabling Wifi alltogether, when the connection is up and running KoboMail will be executed.
+
 You can attach multiple files to a single email, every attachment will be processed. All attachments will be dumped into the folder KoboMailLibrary.
 
 There's a log.txt file in the .add/kobomail folder that will allow to diagnose problems.
 
 ## Uninstalling
 
-Just place a file called UNINSTALL in the .add/kobomail folder and everything will be wiped clean except the KoboMailLibrary~.
+Just place a file called UNINSTALL in the .add/kobomail folder and everything will be wiped clean except the KoboMailLibrary.
 
 ## Further information.
 This project includes bits and pieces of many different projects and ideas discussed in the mobileread.com forums, namely:
  - https://github.com/shermp/kobo-rclone
  - https://github.com/fsantini/KoboCloud
  - https://gitlab.com/anarcat/wallabako
+ - https://github.com/shermp/NickelDBus
 

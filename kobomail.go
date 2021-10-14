@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -45,6 +47,7 @@ func chkErrFatal(err error, usrMsg string, msgDuration int) {
 // }
 
 // nickelUSBplug simulates pugging in a USB cable
+// we'll use this in case NickelDbus is not installed
 func nickelUSBplug() {
 	nickelHWstatusPipe := "/tmp/nickel-hardware-status"
 	nickelPipe, _ := os.OpenFile(nickelHWstatusPipe, os.O_RDWR, os.ModeNamedPipe)
@@ -53,6 +56,7 @@ func nickelUSBplug() {
 }
 
 // nickelUSBunplug simulates unplugging a USB cable
+// we'll use this in case NickelDbus is not installed
 func nickelUSBunplug() {
 	nickelHWstatusPipe := "/tmp/nickel-hardware-status"
 	nickelPipe, _ := os.OpenFile(nickelHWstatusPipe, os.O_RDWR, os.ModeNamedPipe)
@@ -60,11 +64,86 @@ func nickelUSBunplug() {
 	nickelPipe.Close()
 }
 
+// send a toast to dBus
+func dBusToast(duration string, title string, subtitle string) {
+	prg := "/usr/bin/qndb"
+
+	arg1 := "-m"
+	arg2 := "mwcToast"
+	arg3 := duration
+	arg4 := title
+	arg5 := subtitle
+
+	cmd := exec.Command(prg, arg1, arg2, arg3, arg4, arg5)
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		log.Println("Something went wrong", err.Error())
+		return
+	}
+
+	log.Println("dBus Toast called: ", string(stdout))
+}
+
+// send a dialog confirm accept to dBus
+func dBusDlgConfirmAccept(title string, body string, button string) {
+	prg := "/usr/bin/qndb"
+
+	arg1 := "-m"
+	arg2 := "dlgConfirmAccept"
+	arg3 := title
+	arg4 := body
+	arg5 := button
+
+	cmd := exec.Command(prg, arg1, arg2, arg3, arg4, arg5)
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		log.Println("Something went wrong", err.Error())
+		return
+	}
+
+	log.Println("dBus Dialog called: ", string(stdout))
+}
+
+// send a request ro rescan the library with a timeout
+func dBusLibraryRescanFull(timeout string) {
+	prg := "/usr/bin/qndb"
+
+	arg1 := "-t"
+	arg2 := timeout
+	arg3 := "-s"
+	arg4 := "pfmDoneProcessing"
+	arg5 := "-m"
+	arg6 := "pfmRescanBooksFull"
+
+	cmd := exec.Command(prg, arg1, arg2, arg3, arg4, arg5, arg6)
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		log.Println("Something went wrong", err.Error())
+		return
+	}
+
+	log.Println("dBus Dialog called: ", string(stdout))
+}
+
 func main() {
-	// If the file doesn't exist, create it or append to the
+	// Check if NickelDbus is installed, if so then for interacting with Nickel
+	// for library rescan and user notification will be handled with that
+	// if not then let's use the bruteforce method of simulating the usb cable connect
+	KM_UseNickelDbus := false
+	if _, err := os.Stat("/mnt/onboard/.adds/nickeldbus"); err == nil {
+		KM_UseNickelDbus = true
+		log.Println("Found NickelDbus")
+	} else {
+		log.Println("Did not found NickelDbus")
+	}
+
+	// If the log file doesn't exist, create it or append to the
 	KM_Log_Path := ""
-	if _, err := os.Stat("/mnt/onboard/.add/kobomail/logs.txt"); err == nil {
-		KM_Log_Path = "/mnt/onboard/.add/kobomail/logs.txt"
+	if _, err := os.Stat("/mnt/onboard/.adds/kobomail/logs.txt"); err == nil {
+		KM_Log_Path = "/mnt/onboard/.adds/kobomail/logs.txt"
 	} else if os.IsNotExist(err) {
 		KM_Log_Path = "logs.txt"
 	}
@@ -85,8 +164,8 @@ func main() {
 
 	// Read Config file
 	KM_Config_Path := ""
-	if _, err := os.Stat("/mnt/onboard/.add/kobomail/kobomail_cfg.toml"); err == nil {
-		KM_Config_Path = "/mnt/onboard/.add/kobomail/kobomail_cfg.toml"
+	if _, err := os.Stat("/mnt/onboard/.adds/kobomail/kobomail_cfg.toml"); err == nil {
+		KM_Config_Path = "/mnt/onboard/.adds/kobomail/kobomail_cfg.toml"
 	} else if os.IsNotExist(err) {
 		KM_Config_Path = "kobomail_cfg.toml"
 	}
@@ -215,17 +294,28 @@ func main() {
 	// if err := <-done; err != nil {
 	// 	log.Fatal(err)
 	// }
+	number_ebooks_processed := len(uids)
+	if KM_UseNickelDbus {
+		if number_ebooks_processed > 0 {
+			//lets rescan the library for the new ebooks
+			dBusLibraryRescanFull("30000")
+			dBusDlgConfirmAccept("KoboMail", "New ebooks processed and imported: "+strconv.Itoa(number_ebooks_processed), "Close")
+		} else {
+			//if there was nothing to process we'll do a quick notification so the user knows we went and looked for new ebooks
+			dBusToast("5000", "KoboMail", "No new ebooks processed.")
+		}
+	} else {
+		//now that we finished loading all messages we'll simulate the USB cable connect
+		//but only if there were any messages processed, no need to bug the user if there was nothing new
+		if number_ebooks_processed > 0 {
+			log.Println("Simulating PLugging USB cable and wait 10s for the user to click on the connect button")
+			nickelUSBplug()
 
-	//now that we finished loading all messages we'll simulate the USB cable connect
-	//but only if there were any messages processed, no need to bug the user if there was nothing new
-	if len(uids) > 0 {
-		log.Println("Simulating PLugging USB cable and wait 10s for the user to click on the connect button")
-		nickelUSBplug()
+			time.Sleep(10 * time.Second)
 
-		time.Sleep(10 * time.Second)
-
-		log.Println("Simulating unplugging USB cable")
-		nickelUSBunplug()
-		//after this Nickel will do the job to import the new files loaded into the KoboMailLibrary folder
+			log.Println("Simulating unplugging USB cable")
+			nickelUSBunplug()
+			//after this Nickel will do the job to import the new files loaded into the KoboMailLibrary folder
+		}
 	}
 }
