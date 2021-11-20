@@ -1,12 +1,14 @@
 #!/bin/sh
 
 logger -t "KoboMail" -p daemon.warning "Launcher: started"
-#sleeping for 10s to wait for connection to be up and running
 
-logger -t "KoboMail" -p daemon.warning "Launcher: sleep for 10s"
-sleep 10
+if [ "$1" != "manual" ]; then
+    #sleeping for 20s to wait for connection to be up and running
+    logger -t "KoboMail" -p daemon.warning "Launcher: sleep for 20s"
+    sleep 20
+fi
 
-UNINSTALL=/mnt/onboard/.add/kobomail/UNINSTALL
+UNINSTALL=/mnt/onboard/.adds/kobomail/UNINSTALL
 if [ -f "$UNINSTALL" ]; then
     echo "$UNINSTALL exists, removing KoboMail..."
     logger -t "KoboMail" -p daemon.warning "Launcher: KoboMail UNINSTALL file located, removing KoboMail..."

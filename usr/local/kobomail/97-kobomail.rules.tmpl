@@ -1,0 +1,3 @@
+KERNEL=="eth*", ACTION=="add", RUN+="/usr/local/kobomail/kobomail_launcher.sh"
+KERNEL=="wlan*", ACTION=="add", RUN+="/usr/local/kobomail/kobomail_launcher.sh"
+KERNEL=="lo", RUN+="/usr/local/kobomail/kobomail_config_setup.sh"

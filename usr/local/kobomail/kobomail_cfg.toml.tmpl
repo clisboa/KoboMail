@@ -1,22 +1,47 @@
-# currently only gmail is supported
-
-# you need to activate IMAP for your gmail account
-imap_host = "imap.gmail.com"
-imap_port = "993"
-
-# gmail account
-imap_user = "user@gmail.com"
-
-# gmail app password. you will need to generate a password specifically for KoboMail
-# this can be done here: https://support.google.com/mail/answer/185833?hl=en-GB
-imap_pwd = "password"
-
-# with gmail you can send an email to user+kobo@gmail.com and the email will land on user@gmail.com account
-# you can customize the flag used to detect the emails you want to process specifically for the Kobo device
-email_flag = "kobo"
-
-# flag to process all emails sent fo user+kobo@gmail.com or only the unread emails
-email_unseen = "true"
-
 # If you want to uninstall KoboMail just place an empty file called UNINSTALL next to this configuration file 
 # and next time KoboMail runs it will delete itself
+
+[imap_config]
+    # you need to activate IMAP for your gmail account
+    imap_host = "imap.gmail.com"
+    imap_port = "993"
+
+    # email account
+    imap_user = "user@gmail.com"
+
+    # for gmail you should use the following instructions
+    # gmail app password. you will need to generate a password specifically for KoboMail
+    # this can be done here: https://support.google.com/mail/answer/185833?hl=en-GB
+    # other email services please review their configuration options
+    imap_pwd = "password"
+
+    # there's two methods KoboMail can identify emails destined to be imported into you're Kobo device:
+    #  - plus:      where the email server allows sending emails to user+flag@server.com (like gmail)
+    #email_flag_type = "plus"
+    #email_flag = "kobo"
+
+    #  - subject:   where KoboMail will search for emails with a subject like [flag] or $flag$ . 
+    #               We recommend using something unique so there's no false positives, for example
+    #               if you just put Kobo you might be allowing KoboMail to detect regular emails from Rakuten Kobo
+    email_flag_type = "subject"
+    email_flag = "[MyKobo]"
+
+    # flag to process all emails sent to kobo device or only the unread emails 
+    email_unseen = "true"
+
+[execution_type]
+    # there's two methods to trigger the KoboMail execution:
+    #  - auto:   via a trigger attached to the wifi connection, where whenever your kobo device is connected to a wifi connection KoboMail is run
+    type = "auto"
+    #  - manual: via NickelMenu where your Kobo device receives an adicional menu where you can mannually trigger the KoboMail execution
+    #             for this method to work you should first install NickelMenu, head over to https://pgaskin.net/NickelMenu/ to review this component 
+    #type = "manual"
+
+[processing_config]
+    #list the files KoboMail should get from the emails:
+    #filetypes = ["epub", "kepub", "mobi", "pdf", "cbz", "cbr", "txt", "rtf"]
+    filetypes = ["epub", "kepub"]
+
+    #process epub files with kepubify to generate the kepub version with know improvements
+    #not yet implemented
+    #kepubify = "true"

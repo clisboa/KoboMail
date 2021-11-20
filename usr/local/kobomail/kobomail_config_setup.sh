@@ -14,7 +14,7 @@ else
     mkdir /mnt/onboard/.adds/kobomail
     cp $ConfigFileTemplate $UserConfig
     mkdir /mnt/onboard/KoboMailLibrary
-    touch /mnt/onboard/.adds/kobomail/logs.txt
+    touch /mnt/onboard/.adds/kobomail/kobomail.log
     logger -t "KoboMail" -p daemon.warning "Setup: Directories and config file template created"
 fi
 
