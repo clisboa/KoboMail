@@ -31,9 +31,9 @@ Use this software AT YOUR OWN RISK.
 * refactoring NickelDbus to use DBUs libray instead of the qndb binary
 * add kepubify (already verified the arm binary can perfectly do the conversion on device)
 * find latest versions of NickelDbus and NickelMenu and propose to update that for the user
-~~* looking into using NickelDbus to replace udev rules (triggering the program execution)~~
-NickelDBus is a better alternative ~~* adding fbink progress bar when we start execution? (probably to much hassle for little return in functionality)~~
-~~* add other emails accounts types~~
+* ~~looking into using NickelDbus to replace udev rules (triggering the program execution)~~
+* REMOVED - NickelDBus is a better alternative ~~* adding fbink progress bar when we start execution? (probably to much hassle for little return in functionality)~~
+* ~~add other emails accounts types~~
 
 ## Installing
 
