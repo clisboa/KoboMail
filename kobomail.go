@@ -40,11 +40,12 @@ const binCP = "/bin/cp"
 const binRM = "/bin/rm"
 const binQndb = "/usr/bin/qndb"
 
-//config struct
+// config struct
 type KoboMailConfig struct {
 	IMAP_Config       imap_config
 	Execution_Type    execution_type
 	Processing_Config processing_config
+	Zeit_Config       zeit_config
 }
 
 type imap_config struct {
@@ -74,7 +75,7 @@ func nickelUSBplugAddRemove(action string) {
 	nickelPipe.Close()
 }
 
-//let's check if the NickelDbus version is correct
+// let's check if the NickelDbus version is correct
 func checkNickelDbusVersion() (ok bool) {
 	arg1 := "-m"
 	arg2 := "ndbVersion"
@@ -338,8 +339,10 @@ func main() {
 	}
 
 	//let's read the TOML config file and parse it
+	var configPath = defaultPath + defaultConfigFile
+	log.Println("Reading config from: " + configPath)
 	var KM_Config KoboMailConfig
-	if _, err := toml.DecodeFile(defaultPath+defaultConfigFile, &KM_Config); err != nil {
+	if _, err := toml.DecodeFile(configPath, &KM_Config); err != nil {
 		log.Fatal("Couldn't read config. Aborting! ", err)
 	}
 
@@ -523,6 +526,20 @@ func main() {
 						log.Println("file is not in the allowed filetypes, let's ignore it")
 					}
 
+				case *mail.InlineHeader:
+					addr, err := header.AddressList("From")
+					if err != nil {
+						log.Println(err)
+					}
+					if addr != nil {
+						if addr[0].Address == ZEIT_SENDER_ADDRESS {
+							if processZeitDownloadNotification(p, KM_Config.Zeit_Config) {
+								number_ebooks_processed += 1
+							}
+						} else {
+							continue
+						}
+					}
 				}
 			}
 		} else {
