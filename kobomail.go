@@ -494,7 +494,8 @@ func main() {
 				if err == io.EOF {
 					break
 				} else if err != nil {
-					log.Fatal(err)
+					log.Println("skipping message part", err)
+					continue
 				}
 
 				switch h := p.Header.(type) {
